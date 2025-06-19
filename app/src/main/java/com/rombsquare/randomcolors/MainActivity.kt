@@ -1,7 +1,6 @@
 package com.rombsquare.randomcolors
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,12 +13,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -28,17 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.rombsquare.randomcolors.ui.theme.RandomColorsTheme
-import kotlinx.coroutines.delay
-import java.lang.Math.pow
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -60,37 +53,6 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { it ->
                     Main()
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun Rainbow() {
-    val context = LocalContext.current
-
-    var hue by remember { mutableFloatStateOf(0f) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(HSB(hue, 1f, 0.5f))
-            .systemBarsPadding()
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        (context as? Activity)?.finish()
-                    }
-                )
-            },
-    )
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1L)
-            hue += .1f
-            if (hue >= 360) {
-                hue = 0f
             }
         }
     }
@@ -151,18 +113,18 @@ fun getColorName(targetColor: Color): String {
 //        "Light Rose" to Color(255, 142, 199, 255),
     )
 
-    var closest_color = "Black"
-    var closest_distance = 2f
+    var closestColor = "Black"
+    var closestDistance = 2f
 
     for ((name, color) in colors) {
         val dist = getColorDist(targetColor, color)
-        if (dist < closest_distance) {
-            closest_distance = dist
-            closest_color = name
+        if (dist < closestDistance) {
+            closestDistance = dist
+            closestColor = name
         }
     }
 
-    return closest_color
+    return closestColor
 }
 
 @Composable
@@ -204,7 +166,7 @@ fun Main() {
             )
 
             Text(
-                text=if(r+g+b!=0f) RGBtoHEX(r, g, b) else "",
+                text=if(r+g+b!=0f) rgbToHex(r, g, b) else "",
                 color=if (getLuminance(r, g, b) > 0.5f) Color(0, 0, 0, 164) else Color(255, 255, 255, 164),
                 fontSize=20.sp,
                 fontWeight = FontWeight.Bold,
@@ -215,7 +177,7 @@ fun Main() {
     }
 }
 
-fun RGBtoHEX(r: Float, g: Float, b: Float): String {
+fun rgbToHex(r: Float, g: Float, b: Float): String {
     return String.format("#%02X%02X%02X", (r*255).toInt(), (g*255).toInt(), (b*255).toInt())
 }
 
@@ -229,9 +191,4 @@ fun GreetingPreview() {
     RandomColorsTheme {
         Main()
     }
-}
-
-fun HSB(hue: Float, saturation: Float, brightness: Float): Color {
-    val colorInt = ColorUtils.HSLToColor(floatArrayOf(hue, saturation, brightness))
-    return Color(colorInt)
 }
